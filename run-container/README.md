@@ -1,7 +1,8 @@
 # Running the Container for scRNA-Seq Snap Workflow
 
-We provide a Dockerfile file that includes all tools, packages, and dependencies necessary for running the sc-rna-seq-snap analysis modules. These are customized for `Rstudio/R v4.4.0` and `Seurat v4.4.0`.
+We provide a Docker image that includes all tools, packages, and system dependencies required to run the scRNA-Seq Snap analysis modules (for more details, see the [devops-containers](https://github.com/stjude-dnb-binfcore/devops-containers/tree/main/analyses/sc-rna-seq/run-container). The container is built and validated for `RStudio / R v4.4.0` and `Seurat v4.4.0` to ensure reproducibility across environments.
 
+Please note that Cell Ranger is not included in this container and must be installed and run separately, as required by the workflow.
 
 ## Table of Contents
 
@@ -10,10 +11,9 @@ We provide a Dockerfile file that includes all tools, packages, and dependencies
    - [2. Load the Singularity Module](#2-load-the-singularity-module)
    - [3. Pull the Singularity Container](#3-pull-the-singularity-container)
    - [4. Start the Singularity Container](#4-start-the-singularity-container)
-     - [a. Running Analysis Modules via LSF](#a-running-analysis-modules-via-lsf)
-     - [b. Running from the Terminal](#b-running-from-the-terminal)
-     - [c. Running from RStudio](#c-running-from-rstudio)
-     - [d. Fixing Issues with RStudio Server](#d-fixing-issues-with-rstudio-server)
+     - [a. Running from the Terminal](#b-running-from-the-terminal)
+     - [b. Running from RStudio](#c-running-from-rstudio)
+     - [c. Running Analysis Modules via LSF](#a-running-analysis-modules-via-lsf)
 
 2. [Running the Container Outside HPC (Docker)](#running-the-container-outside-hpc-docker)
 
@@ -47,12 +47,7 @@ singularity pull docker://achronistjude/rstudio_4.4.0_seurat_4.4.0:latest
 
 ### 4. Start the Singularity Container
 
-#### a. Running Analysis Modules via LSF
-
-All analysis modules (except for `.analyses/cellranger-analysis`) are designed to be run while executing the container. User only needs to run the lsf script as described in the `README.md` files in each analysis module.
-
-
-#### b. Running from the Terminal
+#### a. Running from the Terminal
 
 User can run analysis module while on interactive node after executing the container:
 
@@ -67,7 +62,7 @@ cd ./sc-rna-seq-snap/analyses/upstream-analysis
 bash run-upstream-analysis.sh
 ```
 
-#### c. Running from RStudio
+#### b. Running from RStudio
 
 User can also run analyses via Rstudio OnDemand after executing the container:
 
@@ -78,18 +73,10 @@ bash run-rstudio.sh
 The `run-rstudio.sh` is running at `IP_ADDR:PORT`. When RStudio launches, please click "Session" -> "Restart R" (at the RStudio web session). Again, the user can navigate to their module of interest and explore/run their analyses.
 
 
-#### d. Fixing Issues with RStudio Server
+#### c. Running Analysis Modules via LSF
 
-If you encounter issues during this step related to RStudio Server and specifically to an invalid secure cookie error. This might be an issue with how the secure cookie is being handled during an HTTP request. In this case, please check if the following directories have been generated and if so, remove them:
+All analysis modules (except for `.analyses/cellranger-analysis`) are designed to be run while executing the container. User only needs to run the lsf script as described in the `README.md` files in each analysis module.
 
-```
-rm -r .cache/
-rm -r .config/
-rm -r .local/
-rm -r rstudio-container-tmp/
-```
-
-These folders cache history and user info. Then, kill the interactive session, start a new one, and hopefully, it works! 🎉
 
 
 ## Running the Container Outside HPC (Docker)
